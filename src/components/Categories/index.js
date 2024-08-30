@@ -1,5 +1,5 @@
 import {useState, useRef, useEffect, useContext} from 'react'
-import MyContext from '../../context/MyContext'
+import CartContext from '../../context/MyContext'
 import './index.css'
 
 const Categories = () => {
@@ -7,7 +7,7 @@ const Categories = () => {
     updateCurrentDishList,
     restaurantData,
     updateCurrentDishCategory,
-  } = useContext(MyContext)
+  } = useContext(CartContext)
 
   let idCount = 0
   const menuCategory = restaurantData.map(eachItem => {
@@ -16,6 +16,7 @@ const Categories = () => {
   })
   const items = [...menuCategory]
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [previousIndex, setPreviousIndex] = useState(0)
   const [showArrow, setShowArrow] = useState(false)
   const scrollContainerRef = useRef(null)
 

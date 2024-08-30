@@ -1,9 +1,12 @@
 import {useState, useEffect, useContext} from 'react'
+import {Redirect} from 'react-router-dom'
+import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
+
 import Header from '../Header'
 import Categories from '../Categories'
 import CurrentDishesList from '../CurrentDishesList'
-import MyContext from '../../context/MyContext'
+import CartContext from '../../context/MyContext'
 import './index.css'
 
 const apiStatus = {
@@ -13,7 +16,7 @@ const apiStatus = {
 }
 
 const RestoApp = () => {
-  const {updateRestaurantName, updateRestaurantData} = useContext(MyContext)
+  const {updateRestaurantName, updateRestaurantData} = useContext(CartContext)
   const [currentApiStatus, setCurrentApiStatus] = useState(apiStatus.loader)
 
   useEffect(() => {
@@ -97,6 +100,12 @@ const RestoApp = () => {
       <Loader type="ThreeDots" height={80} width={80} color="black" />
     </div>
   )
+
+  const jwtToken = Cookies.get('jwt_token')
+
+  if (jwtToken === undefined) {
+    return <Redirect to="/login" />
+  }
 
   return (
     <div>

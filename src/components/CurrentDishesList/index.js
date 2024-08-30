@@ -1,10 +1,14 @@
 import {useContext, useState, useEffect} from 'react'
-import MyContext from '../../context/MyContext'
+import CartContext from '../../context/MyContext'
 import './index.css'
 
 const CurrentDishesList = () => {
-  const {currentDishList, increaseQuantity, decreaseQuantity} =
-    useContext(MyContext)
+  const {
+    currentDishList,
+    increaseItemQuantity,
+    decreaseItemQuantity,
+    addCartItem,
+  } = useContext(CartContext)
   const {categoryDishes} = currentDishList
 
   const [categoryDishesList, setCategoryDishesList] = useState([])
@@ -16,7 +20,7 @@ const CurrentDishesList = () => {
   }, [categoryDishes])
 
   const onClickIncreaseBtn = dishId => {
-    increaseQuantity(dishId)
+    increaseItemQuantity(dishId)
   }
 
   const onClickDecreaseBtn = dishId => {
@@ -24,8 +28,12 @@ const CurrentDishesList = () => {
       eachDish => eachDish.dishId === dishId,
     )
     if (currentDish.quantity > 0) {
-      decreaseQuantity(dishId)
+      decreaseItemQuantity(dishId)
     }
+  }
+
+  const onClickAddToCartBtn = cartItem => {
+    addCartItem(cartItem)
   }
 
   return (
@@ -90,7 +98,11 @@ const CurrentDishesList = () => {
                       </button>
                     </div>
                     {quantity > 0 && (
-                      <button type="button" className="add-to-cart-button">
+                      <button
+                        onClick={() => onClickAddToCartBtn(eachItem)}
+                        type="button"
+                        className="add-to-cart-button"
+                      >
                         ADD TO CART
                       </button>
                     )}

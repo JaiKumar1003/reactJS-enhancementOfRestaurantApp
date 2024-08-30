@@ -1,6 +1,6 @@
 import {createContext} from 'react'
 
-const MyContext = createContext({
+const CartContext = createContext({
   restaurantData: [],
   updateRestaurantData: () => {},
   currentDishCategory: '',
@@ -9,9 +9,14 @@ const MyContext = createContext({
   updateRestaurantName: () => {},
   currentDishList: {},
   updateCurrentDishList: () => {},
-  cartItem: 0,
-  increaseCartItem: () => {},
-  decreaseCartItem: () => {},
+  increaseItemQuantity: () => {},
+  decreaseItemQuantity: () => {},
+  cartList: [],
+  addCartItem: () => {},
+  removeCartItem: () => {},
+  removeAllCartItems: () => {},
+  incrementCartItemQuantity: () => {},
+  decrementCartItemQuantity: () => {},
 })
 
-export default MyContext
+export default CartContext

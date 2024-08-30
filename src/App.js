@@ -1,16 +1,41 @@
 import {useState} from 'react'
+import {BrowserRouter, Switch, Route} from 'react-router-dom'
 
 import './App.css'
 
+import Login from './components/Login'
 import RestoApp from './components/RestoApp'
-import MyContext from './context/MyContext'
+import Cart from './components/Cart'
+import CartContext from './context/MyContext'
 
 const App = () => {
   const [restaurantName, setRestaurantName] = useState('')
   const [currentDishCategory, setCurrentDishCategory] = useState('')
   const [currentDishList, setCurrentDishList] = useState({})
   const [restaurantData, setRestaurantData] = useState([])
-  const [cartItem, setCartItem] = useState(0)
+  const [cartList, setCartList] = useState([])
+
+  const addCartItem = eachItem => {
+    const findCartItem = cartList.find(
+      eachCart => eachCart.dishId === eachItem.dishId,
+    )
+    if (findCartItem) {
+      setCartList(
+        cartList.map(eachCart => {
+          if (eachCart.dishId === eachItem.dishId) {
+            return {
+              ...eachCart,
+              quantity: eachCart.quantity + eachItem.quantity,
+            }
+          }
+
+          return eachCart
+        }),
+      )
+    } else {
+      setCartList([...cartList, eachItem])
+    }
+  }
 
   const updateCurrentDishList = currentList => {
     setCurrentDishList(currentList)
@@ -20,7 +45,7 @@ const App = () => {
     setRestaurantName(resName)
   }
 
-  const increaseQuantity = dishId => {
+  const increaseItemQuantity = dishId => {
     const quantityUpdate = restaurantData.map(eachItem => {
       if (eachItem.menuCategoryId === currentDishCategory) {
         return {
@@ -37,11 +62,22 @@ const App = () => {
       return eachItem
     })
 
-    setCartItem(prevState => prevState + 1)
     setRestaurantData(quantityUpdate)
   }
 
-  const decreaseQuantity = dishId => {
+  const incrementCartItemQuantity = dishId => {
+    const cartQuantityUpdate = cartList.map(eachCart => {
+      if (eachCart.dishId === dishId) {
+        return {...eachCart, quantity: eachCart.quantity + 1}
+      }
+
+      return eachCart
+    })
+
+    setCartList(cartQuantityUpdate)
+  }
+
+  const decreaseItemQuantity = dishId => {
     const quantityUpdate = restaurantData.map(eachItem => {
       if (eachItem.menuCategoryId === currentDishCategory) {
         return {
@@ -58,8 +94,30 @@ const App = () => {
       return eachItem
     })
 
-    setCartItem(prevState => prevState - 1)
     setRestaurantData(quantityUpdate)
+  }
+
+  const decrementCartItemQuantity = dishId => {
+    const currentCartItem = cartList.filter(
+      eachCart => eachCart.dishId === dishId,
+    )[0]
+
+    if (currentCartItem.quantity === 1) {
+      const updateCartList = cartList.filter(
+        eachCart => eachCart.dishId !== dishId,
+      )
+      console.log(updateCartList)
+      setCartList(updateCartList)
+    } else {
+      const cartQuantityUpdate = cartList.map(eachCart => {
+        if (eachCart.dishId === dishId) {
+          return {...eachCart, quantity: eachCart.quantity - 1}
+        }
+
+        return eachCart
+      })
+      setCartList(cartQuantityUpdate)
+    }
   }
 
   const updateRestaurantData = data => {
@@ -70,8 +128,19 @@ const App = () => {
     setCurrentDishCategory(dishCategoryId)
   }
 
+  const removeCartItem = dishId => {
+    const updateCartList = cartList.filter(
+      eachCart => eachCart.dishId !== dishId,
+    )
+    setCartList(updateCartList)
+  }
+
+  const removeAllCartItems = () => {
+    setCartList([])
+  }
+
   return (
-    <MyContext.Provider
+    <CartContext.Provider
       value={{
         restaurantData,
         updateRestaurantData,
@@ -81,13 +150,24 @@ const App = () => {
         updateRestaurantName,
         currentDishList,
         updateCurrentDishList,
-        cartItem,
-        increaseQuantity,
-        decreaseQuantity,
+        increaseItemQuantity,
+        decreaseItemQuantity,
+        cartList,
+        addCartItem,
+        incrementCartItemQuantity,
+        decrementCartItemQuantity,
+        removeCartItem,
+        removeAllCartItems,
       }}
     >
-      <RestoApp />
-    </MyContext.Provider>
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/login" component={Login} />
+          <Route exact path="/" component={RestoApp} />
+          <Route exact path="/cart" component={Cart} />
+        </Switch>
+      </BrowserRouter>
+    </CartContext.Provider>
   )
 }
 
